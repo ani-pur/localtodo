@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-import auth
+from logic import auth
 import tasks
 
 app = Flask(__name__)
