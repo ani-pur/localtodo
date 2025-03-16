@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from logic import auth
 from logic import tasks
 
+
 app = Flask(__name__)
 app.secret_key = 'goodmorningbob'  # Replace with a secure random secret in production
 @app.route('/login', methods=['GET', 'POST'])
