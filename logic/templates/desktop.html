@@ -83,13 +83,10 @@
         }
 
         #time_fields .inline-field {
-            display: inline-block;
-            width: calc(33% - 10px);
-            margin-right: 10px;
+            display: block;
+            width: 80%;
         }
-        #time_fields .inline-field:last-child {
-            margin-right: 0;
-        }
+    
     </style>
 </head>
 <body>
@@ -101,30 +98,19 @@
         <ul id="taskList"></ul>
 
         <h3>Add New Task</h3>
-        <form id="taskForm">
+        <form id="taskForm" autocomplete="off">
             <div>
                 <label for="task_name"></label>
                 <input type="text" id="task_name" placeholder="Task Name" required>
             </div>
             <div>
                 <label for="all_day">All Day Task:
-                <input type="checkbox" id="all_day">
+                <input type="checkbox" id="all_day" name="all_day">
             </label>
             </div>
             <div id="time_fields">
                 <label>Task Time:</label>
-                <div class="inline-field">
-                    <input type="number" id="hour" placeholder="HH" min="1" max="12">
-                </div>
-                <div class="inline-field">
-                    <input type="number" id="minute" placeholder="MM" min="0" max="59">
-                </div>
-                <div class="inline-field">
-                    <select id="ampm">
-                        <option value="AM">AM</option>
-                        <option value="PM">PM</option>
-                    </select>
-                </div>
+                <input type="time" id="task_time" placeholder="HH MM AM/PM" required>
             </div>
             <div>
                 <label for="task_description">Task Description:</label>
@@ -207,10 +193,8 @@
             if (isAllDay) {
                 taskTime = "all day";
             } else {
-                const hour = document.getElementById('hour').value;
-                const minute = document.getElementById('minute').value;
-                const ampm = document.getElementById('ampm').value;
-                taskTime = `${hour}:${minute} ${ampm}`;
+                // Use the value from the time picker field directly
+                taskTime = document.getElementById('task_time').value;
             }
             
             const taskData = {
