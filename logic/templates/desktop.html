@@ -133,11 +133,18 @@
     </div>
 
     <script>
-        // Toggle display of time fields based on the "All Day Task" checkbox.
         document.getElementById('all_day').addEventListener('change', function() {
-            const timeFields = document.getElementById('time_fields');
-            timeFields.style.display = this.checked ? 'none' : 'block';
-        });
+        const timeFields = document.getElementById('time_fields');
+        const taskTimeInput = document.getElementById('task_time');
+        if (this.checked) {
+            timeFields.style.display = 'none';
+            taskTimeInput.required = false;  // Remove required attribute when "All Day" is checked.
+        } else {
+            timeFields.style.display = 'block';
+            taskTimeInput.required = true;   // Re-add required attribute when unchecked.
+        }
+    });
+
 
         async function loadTasks() {
             const response = await fetch('/tasks');
