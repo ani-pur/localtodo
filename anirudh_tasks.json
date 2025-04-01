@@ -1,3 +1,13 @@
 {
-    "tasks": []
+    "tasks": [
+        {
+            "task_name": "4TH APRIL: UTD mandatory modules",
+            "task_time": "all day",
+            "task_description": "complete utd mandatory modules\noutlook email 'complete mandatory modules' dekh ke khatam karo",
+            "color": "#ff0000",
+            "due_date": "2025-04-04",
+            "status": "IMPORTANT",
+            "id": 1
+        }
+    ]
 }
