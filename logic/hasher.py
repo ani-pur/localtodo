@@ -3,12 +3,12 @@ import string
 import werkzeug.security
 import json
 
-def hasher(name, password):
+def hasher(name, password):     # runs user password through hasher (no salting and all that yet) and saves name:hash pair in users.json for authentication
 
-    hashed_pw = werkzeug.security.generate_password_hash(password)
+    hashed_pw = werkzeug.security.generate_password_hash(password)  
     with open('users.json', 'r') as file:
         users=json.load(file)
-    users[name]=hashed_pw
+    users[name]=hashed_pw       
     with open('users.json','w') as file:
         json.dump(users,file,indent=4)
         print("user added")
@@ -30,9 +30,27 @@ while True:
             # No break here to return to menu
             
         elif option == 2:
-            print('Not implemented yet')
-            # No break here to return to menu
+            #IMPLEMENTED
             
+            # list saved profiles, take admin input and parse users.json until {input}:hash match is found and delete, save updates
+            
+            with open('users.json','r') as file:
+                userData=json.load(file)
+                for i in userData.keys():
+                    print(i,'\n')
+                parseName=input("Enter profile to be deleted: ")
+                if parseName in userData.keys():
+                    with open('users.json','w') as file:
+                        print('found, deleting...')  
+                        del userData[parseName]
+                        print(userData.keys())
+                        json.dump(userData,file,indent=4)
+                        break  
+                else:
+                    print('error: profile does not exist')  
+                    break
+                      
+                    
         elif option == 3:
             print('Not implemented yet')
             # No break here to return to menu
