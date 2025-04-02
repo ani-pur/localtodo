@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import auth
 import tasks        # 'from logic import' if not running locally
+import secrets
 
 
 app = Flask(__name__)
-app.secret_key = 'goodmorningbob'  # Replace with a secure random secret in production
+app.secret_key = secrets.token_hex()  # Replace with a secure random secret in production
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None

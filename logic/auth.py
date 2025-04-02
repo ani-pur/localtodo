@@ -6,7 +6,7 @@ def load_users():
         return json.load(file) #loads file contents into cache i think
 
 def verify_login(input_pass):
-    users=load_users() #contents in cash assigned to variable 
+    users=load_users() #contents in cache assigned to variable 
     for username, stored_hash in users.items(): 
         if werkzeug.security.check_password_hash(stored_hash,input_pass):
             return username #found matching user
