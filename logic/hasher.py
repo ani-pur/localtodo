@@ -51,9 +51,11 @@ while True:
                     break
                       
                     
-        elif option == 3:
-            print('Not implemented yet')
-            # No break here to return to menu
+        elif option == 3:           #IMPLEMENTED
+            with open('users.json','r') as file:
+                userData=json.load(file)
+                for i in userData.keys():
+                    print(i,'\n')
             
         elif option == 4:
             print("Exiting program...")
