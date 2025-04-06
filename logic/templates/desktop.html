@@ -156,7 +156,7 @@
                 li.innerHTML = `
                     <details>
                         <summary>
-                            <strong class="task-title" style="color: ${task.color};">${task.task_name}</strong> (Due: ${task.due_date}) - ${task.status}
+                            <strong class="task-title" style="color: ${task.color};">${task.task_name}</strong> (Due: ${formatDateForDisplay(task.due_date)}) - ${task.status}
                         </summary>
                         <div style="margin-left: 20px;">
                             <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%;">
@@ -180,6 +180,13 @@
                 taskList.appendChild(li);
             });
         }
+
+        function formatDateForDisplay(storedDate) {
+            const [month, day, year] = storedDate.split('/');
+            const date = new Date(`20${year}`, month - 1, day); // convert to full Date
+            const options = { day: '2-digit', month: 'short' }; // e.g., 06 Apr
+            return date.toLocaleDateString('en-US', options);
+            }
 
         async function deleteTask(taskId) {
             const response = await fetch('/tasks/' + taskId, {

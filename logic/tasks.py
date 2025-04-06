@@ -61,7 +61,7 @@ def get_all_tasks(username, sort_order='asc'):
 
     def sort_key(task):
         try:
-            return datetime.strptime(task["due_date"], "%m-%d-%Y")
+            return datetime.strptime(task["due_date"], "%m/%d/%y")
         except Exception:
             # If due_date is missing or malformed, push it to the end.
             return datetime.max
@@ -93,6 +93,13 @@ def add_task(username, task_data):
       - status (str)
     This function assigns a unique id and saves the task.
     """
+    if "due_date" in task_data:
+        try:
+            dt = datetime.strptime(task_data["due_date"], "%Y-%m-%d")  # HTML default
+            task_data["due_date"] = dt.strftime("%m/%d/%y")  # Save in mm/dd/yy
+        except Exception:
+            pass  # fallback or log error
+        
     data = load_tasks(username)
     tasks = data.get("tasks", [])
     new_id = _get_next_task_id(tasks)

@@ -136,6 +136,14 @@
       }
     }
 
+
+    function formatDateForDisplay(storedDate) {
+      const [month, day, year] = storedDate.split('/');
+      const date = new Date(`20${year}`, month - 1, day); // convert to full Date
+      const options = { day: '2-digit', month: 'short' }; // e.g., 06 Apr
+      return date.toLocaleDateString('en-US', options);
+    }
+
     async function loadTasks() {
       const response = await fetch('/tasks');
       const tasks = await response.json();
@@ -146,7 +154,7 @@
         li.innerHTML = `
           <div class="task-summary">
             <strong style="color: ${task.color};">${task.task_name}</strong> 
-            <span style="color: ${task.color};">Due: ${task.due_date}</span> - 
+            <span style="color: ${task.color};">Due: ${formatDateForDisplay(task.due_date)}</span> - 
             <span style="color: ${task.color};">${task.status}</span>
           </div>
           <div class="task-details">
