@@ -1,11 +1,14 @@
 #hasher for managing passwords in users.json
-import string
 import werkzeug.security
+import os
 import json
 
 def hasher(name, password):     # runs user password through hasher (no salting and all that yet) and saves name:hash pair in users.json for authentication
 
     hashed_pw = werkzeug.security.generate_password_hash(password)  
+    if not os.path.exists('users.json'):
+            with open('users.json', 'w') as file:
+                json.dump({}, file)
     with open('users.json', 'r') as file:
         users=json.load(file)
     users[name]=hashed_pw       
@@ -45,7 +48,7 @@ while True:
                         del userData[parseName]
                         print(userData.keys())
                         json.dump(userData,file,indent=4)
-                        break  
+                        
                 else:
                     print('error: profile does not exist')  
                     break
@@ -54,9 +57,13 @@ while True:
         elif option == 3:           #IMPLEMENTED
             with open('users.json','r') as file:
                 userData=json.load(file)
-                for i in userData.keys():
-                    print(i,'\n')
-            
+                if userData:            # userData evaluates to true if NOT EMPTY
+                    for i in userData.keys():
+                        print(i,': is i\n')
+                else:
+                    print("empty file")
+
+
         elif option == 4:
             print("Exiting program...")
             break  # This will exit the while loop
@@ -64,5 +71,5 @@ while True:
         else:
             print("Invalid option, please try again.")
             
-    except ValueError:
-        print("Please enter a valid number. [OR EMPTY LIST]")
+    except ValueError as e:
+        print("Please enter a valid number. [OR EMPTY LIST]"+str(e))
