@@ -14,7 +14,7 @@
         /* Set background for the entire page */
         body {
         font-family: 'Roboto', sans-serif;
-        background: url("/static/abstractminimal.jpg") no-repeat center center fixed;
+        background: url("/static/macOS_minimal.jpg") no-repeat center center fixed;
         background-size: 2160px;
         margin: 0;
         padding: 0;
@@ -86,7 +86,12 @@
             display: block;
             width: 80%;
         }
-    
+        
+        form select, 
+        form select option {
+            background-color: rgba(0,0,0,0.7);
+            color: gray;
+        }
     </style>
 </head>
 <body>
@@ -125,8 +130,13 @@
                 <input type="date" id="due_date" required>
             </div>
             <div>
-                <label for="status">Status:</label>
-                <input type="text" id="status" placeholder="Status (e.g., pending)" required>
+                <label for="status">Priority:</label>
+                <select name="status" id="status">
+                    <option value="1">1. URGENT</option>
+                    <option value="2">2. HIGH</option>
+                    <option value="3">3. MEDIUM</option>
+                    <option value="4">4. LOW</option>
+                </select>
             </div>
             <button type="submit">Add Task</button>
         </form>
