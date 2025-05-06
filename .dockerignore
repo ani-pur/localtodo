@@ -1,0 +1,6 @@
+*.bat
+*.vbs
+.git/
+.gitignore
+.gitattributes
+README.md
