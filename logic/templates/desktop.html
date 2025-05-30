@@ -13,7 +13,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: url('/static/abstractminimal.jpg') no-repeat center center fixed;
+            background: url('/static/dark_rainforest.jpg') no-repeat center center fixed;
             background-size: cover;
             font-family: 'Roboto', sans-serif;
         }
@@ -219,19 +219,29 @@
     <div class="glass-container" style="position:relative;">
         <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
         <h1 class="honk-text">Welcome, {{ username }}!</h1>
+        <div style="margin-bottom: 1em; text-align: center;">
+            <label for="bgSelector" style="color: white; font-weight: 500;">Choose Background:</label>
+            <select id="bgSelector" style="margin-left: 8px; padding: 6px 12px; border-radius: 8px;">
+                <option value="/static/dark_rainforest.jpg">Dark Rainforest</option>
+                <option value="/static/abstractminimal.jpg">abstract minimal</option>
+                <option value="/static/purplesunset.jpg">Outer Space</option>
+                <option value="/static/macOS_minimal.jpg">macOS </option>
+                <option value="none">No Background</option>
+            </select>
+        </div>
         <h2>Your Tasks</h2>
         <ul id="taskList"></ul>
         <h3>Add New Task</h3>
         <form id="taskForm" autocomplete="off">
             <label for="task_name">Task Name</label>
-            <input type="text" id="task_name" placeholder="" required>
+            <input type="text" id="task_name" required>
             <div class="checkbox-row">
                 <input type="checkbox" id="all_day" name="all_day">
                 <label for="all_day">All Day Task</label>
             </div>
             <div id="time_fields">
                 <label for="task_time">Task Time</label>
-                <input type="time" id="task_time" placeholder="HH MM AM/PM" required>
+                <input type="time" id="task_time" required>
             </div>
             <label for="task_description">Task Description</label>
             <textarea id="task_description" placeholder="Task Description" style="resize: vertical;"></textarea>
@@ -263,6 +273,29 @@
                 taskTimeInput.required = true;
             }
         });
+
+        function setBackground(imageUrl) {
+            const body = document.body;
+            if (imageUrl === "none") {
+                body.style.background = "#111";
+            } else {
+                body.style.background = `url('${imageUrl}') no-repeat center center fixed`;
+                body.style.backgroundSize = "cover";
+            }
+            localStorage.setItem("bgImage", imageUrl);
+        }
+
+        document.getElementById('bgSelector').addEventListener('change', function() {
+            const selected = this.value;
+            setBackground(selected);
+        });
+
+        const savedBg = localStorage.getItem("bgImage");
+        if (savedBg) {
+            document.getElementById("bgSelector").value = savedBg;
+            setBackground(savedBg);
+        }
+
         async function loadTasks() {
             const response = await fetch('/tasks');
             const tasks = await response.json();
@@ -288,12 +321,14 @@
                 taskList.appendChild(li);
             });
         }
+
         function formatDateForDisplay(storedDate) {
             const [month, day, year] = storedDate.split('/');
             const date = new Date(`20${year}`, month - 1, day);
             const options = { day: '2-digit', month: 'short' };
             return date.toLocaleDateString('en-US', options);
         }
+
         async function deleteTask(taskId) {
             const response = await fetch('/tasks/' + taskId, {
                 method: 'DELETE'
@@ -304,6 +339,7 @@
                 alert('Failed to delete task');
             }
         }
+
         document.getElementById('taskForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             let taskTime = "";
@@ -336,6 +372,7 @@
                 alert('Failed to add task');
             }
         });
+
         loadTasks();
     </script>
 </body>
