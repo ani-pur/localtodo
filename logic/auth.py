@@ -1,23 +1,16 @@
 import json
 import werkzeug.security
 
-def load_users():
+#loads file contents 
+def load_users(): 
     with open('users.json','r') as file:
-        return json.load(file) #loads file contents into cache i think
+        return json.load(file) 
 
-def verify_login(input_pass):
-    users=load_users() #contents in cache assigned to variable 
+# verify login by checking INPUT PASSWORD hash against stored hashes, returns username correlated to matched hash
+def verify_login(input_pass):   
+    users=load_users()      #loads users from users.json
     for username, stored_hash in users.items(): 
-        if werkzeug.security.check_password_hash(stored_hash,input_pass):
-            return username #found matching user
+        if werkzeug.security.check_password_hash(stored_hash,input_pass):       #check for hash match
+            return username     #return matching username, else return None
     return None
 
-if __name__=="__main__":
-    # prompt user to input password
-    input_pass=input("enter password: ").strip()
-    user=verify_login(input_pass) #user variable is assigned the value that is returned by verify_login, there's no error handling gg
-
-    if user:
-        print(f"bismillah found a match \n welcome, {user}")
-    else:
-        print("404: no match found or something broke")

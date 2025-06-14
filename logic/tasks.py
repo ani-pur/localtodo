@@ -14,7 +14,7 @@ def _initialize_tasks_file(username):
     If not, create it with a default empty tasks structure.
     """
     file_path = _get_tasks_file(username)
-    if not os.path.exists(file_path):
+    if not os.path.exists(file_path):       #if path DOESN'T exist, create and return
         with open(file_path, 'w') as file:
             json.dump({"tasks": []}, file, indent=4)
     return file_path
@@ -50,7 +50,7 @@ def _get_next_task_id(tasks):
     max_id = max(task.get("id", 0) for task in tasks)
     return max_id + 1
 
-def get_all_tasks(username, sort_order='asc'):
+def get_all_tasks(username,sort_order):
     """
     Retrieve all tasks for the given user.
     Tasks are sorted by their due_date (expected format: "mm-dd-yyyy").
@@ -66,20 +66,10 @@ def get_all_tasks(username, sort_order='asc'):
             # If due_date is missing or malformed, push it to the end.
             return datetime.max
 
-    tasks.sort(key=sort_key, reverse=(sort_order == 'desc'))
+    tasks.sort(key=sort_key, reverse=(sort_order=='desc'))
     return tasks
 
-def get_task(username, task_id):
-    """
-    Retrieve a single task by its unique task_id for the given user.
-    Returns the task if found, or None otherwise.
-    """
-    data = load_tasks(username)
-    tasks = data.get("tasks", [])
-    for task in tasks:
-        if task.get("id") == task_id:
-            return task
-    return None
+
 
 def add_task(username, task_data):
     """
@@ -109,20 +99,7 @@ def add_task(username, task_data):
     save_tasks(username, data)
     return task_data
 
-def update_task(username, task_id, updated_fields):
-    """
-    Update an existing task for the given user.
-    updated_fields is a dictionary with the fields to be updated.
-    Returns the updated task if successful, or None if not found.
-    """
-    data = load_tasks(username)
-    tasks = data.get("tasks", [])
-    for idx, task in enumerate(tasks):
-        if task.get("id") == task_id:
-            tasks[idx].update(updated_fields)
-            save_tasks(username, data)
-            return tasks[idx]
-    return None
+
 
 def delete_task(username, task_id):
     """
@@ -131,7 +108,7 @@ def delete_task(username, task_id):
     """
     data = load_tasks(username)
     tasks = data.get("tasks", [])
-    new_tasks = [task for task in tasks if task.get("id") != task_id]
+    new_tasks = [task for task in tasks if task.get("id") != task_id]       # please change this bullshit, use postgres man 
     if len(new_tasks) == len(tasks):
         # Task with task_id not found
         return False
