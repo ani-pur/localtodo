@@ -1,75 +1,113 @@
-#hasher for managing passwords in users.json
-import werkzeug.security
-import os
-import json
+# THIS MODULE HANDLES CREDENTIALS AND AUTHENTICATION
 
-def hasher(name, password):     # runs user password through hasher (no salting and all that yet) and saves name:hash pair in users.json for authentication
 
-    hashed_pw = werkzeug.security.generate_password_hash(password)  
-    if not os.path.exists('users.json'):
-            with open('users.json', 'w') as file:
-                json.dump({}, file)
-    with open('users.json', 'r') as file:
-        users=json.load(file)
-    users[name]=hashed_pw       
-    with open('users.json','w') as file:
-        json.dump(users,file,indent=4)
-        print("user added")
+import werkzeug.security as wz
+#import os
+#import json
+import psycopg2
+
+# connect to db
+def dbConnect():
+    return psycopg2.connect(
+        dbname = 'tasker',
+        user = 'anirudh',
+        password = "",      #fill
+        host = 'localhost',
+        port = ''       #fill
+    )
+
+
+
+# run user password through hasher and save name:hash pair in db
+def hasher():     
     
+    name = str(input("enter name: "))
+    password = str(input("enter password: "))
+    hashedPass = wz.generate_password_hash(password)
     
-while True:
-    print('1. add user')
-    print('2. delete user')
-    print('3. list users')
-    print('4. exit')
-    
-    try:
-        option = int(input("enter option: "))
-        
-        if option == 1:    
-            name = input("Enter name: ")  # Changed string() to input()
-            password = input("enter user password: ")  # Changed string() to input()
-            hasher(name, password)
-            # No break here to return to menu
-            
-        elif option == 2:
-            #IMPLEMENTED
-            
-            # list saved profiles, take admin input and parse users.json until {input}:hash match is found and delete, save updates
-            
-            with open('users.json','r') as file:
-                userData=json.load(file)
-                for i in userData.keys():
-                    print(i,'\n')
-                parseName=input("Enter profile to be deleted: ")
-                if parseName in userData.keys():
-                    with open('users.json','w') as file:
-                        print('found, deleting...')  
-                        del userData[parseName]
-                        print(userData.keys())
-                        json.dump(userData,file,indent=4)
+    with dbConnect() as conn:
+        with conn.cursor() as cur:
+            try: 
+                cur.execute(
+                    "INSERT INTO users VALUES (%s, %s)",(name,hashedPass)
+                )
+
+            except psycopg2.Error as e:
+                print("DB error: ",e)
+
+    return hashedPass
+
+
+def delProfile():
+    name = str(input("enter name of profile to delete: "))
+    with dbConnect() as conn:
+        with conn.cursor() as cur:
+            try:
+                cur.execute(
+                    "DELETE FROM users WHERE USERNAME = %s ;"
+                ,(name,))
+                cur.execute("SELECT * FROM users;")
+                rows = cur.fetchall()
+                for i in rows: 
+                    print('\n',i,'\n')
+
+            except psycopg2.Error as e:
+                print("DB error: ",e)
+
+
+def displayProfiles():
+    with dbConnect() as conn:
+        with conn.cursor() as cur:
+            try:
+                cur.execute("SELECT * FROM users;")
+                dbResponse = cur.fetchall()
+                for i in dbResponse:
+                    print('\n',i, '\n')
+            except psycopg2.Error as e:
+                print("DB error: ",e)
+
+
+# AUTHENTICATE LOGIN
+def verify_login(input_pass):
+        with dbConnect() as conn:
+            with conn.cursor() as cur:
+                try:
+                    cur.execute("SELECT * FROM users;")
+                    dbResponse = cur.fetchall()
+                    #print(dbResponse)
+                    for i in dbResponse:
+                        if wz.check_password_hash(i[1],input_pass):
+                            print("MATCH FOUND: ",i[0])
+                            return str(i[0])
                         
-                else:
-                    print('error: profile does not exist')  
-                    break
-                      
-                    
-        elif option == 3:           #IMPLEMENTED
-            with open('users.json','r') as file:
-                userData=json.load(file)
-                if userData:            # userData evaluates to true if NOT EMPTY
-                    for i in userData.keys():
-                        print(i,': is i\n')
-                else:
-                    print("empty file")
+
+                except psycopg2.Error as e:
+                    print("DB error: ",e)
+                
+    
+# menu for CRUD operations
+def crudOps():
+    while True:
+        menuInp = int(input(" 1. create profile \n 2. delete profile \n 3. display profiles \n 4. exit \n"))
+        if menuInp==1:
+            hasher()
+
+        elif menuInp==2:
+            delProfile()
+        
+        elif menuInp==3:
+            displayProfiles()
+        
+        elif menuInp==5:
+            input_pass=str(input("enter password to crosscheck: "))
+            verify_login(input_pass)
+        elif menuInp==4:
+            break
 
 
-        elif option == 4:
-            print("Exiting program...")
-            break  # This will exit the while loop
-            
-        else:
-            print("Invalid option, please try again.")
-            
-    except ValueError as e:
-        print("Please enter a valid number. [OR EMPTY LIST]"+str(e))
+
+# if program is run from CLI
+if __name__=="__main__":
+    crudOps()
+
+

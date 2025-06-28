@@ -140,7 +140,7 @@
         .color-row {
             width: 100%;
             display: flex;
-            align-items: center;
+            align-items: left;
             gap: 12px;
             margin-bottom: 0;
             max-width: 100%;
@@ -178,7 +178,7 @@
             width: 100%;
         }
         button[type="submit"] {
-            background: linear-gradient(90deg, #4f8cff 0%, #6ed0fa 100%);
+            background-color: #FDB927; /* Lakers gold */
             color: #fff;
             border: none;
             border-radius: 12px;
@@ -188,12 +188,13 @@
             cursor: pointer;
             margin-top: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: background 0.2s;
-            width: 100%;
-            max-width: 800px;
+            transition: background-color 0.25s;
+            width: 20%;
+            max-width: 250px;
         }
+
         button[type="submit"]:hover {
-            background: linear-gradient(90deg, #6ed0fa 0%, #4f8cff 100%);
+            background-color: #552583; /* Lakers purple */
         }
         @media (max-width: 600px) {
             .glass-container {
@@ -222,57 +223,25 @@
         <div style="margin-bottom: 1em; text-align: center;">
             <label for="bgSelector" style="color: white; font-weight: 500;">Choose Background:</label>
             <select id="bgSelector" style="margin-left: 8px; padding: 6px 12px; border-radius: 8px;">
-                <option value="/static/dark_rainforest.jpg">Dark Rainforest</option>
-                <option value="/static/abstractminimal.jpg">abstract minimal</option>
-                <option value="/static/purplesunset.jpg">Outer Space</option>
-                <option value="/static/macOS_minimal.jpg">macOS </option>
-                <option value="none">No Background</option>
+                <option value="/static/dark_rainforest.jpg">Rainforest</option>
+                <option value="/static/abstractminimal.jpg">abstract</option>
+                <option value="/static/macOS_minimal.jpg">macOS</option>
+                <option value="none">dark</option>
             </select>
         </div>
         <h2>Your Tasks</h2>
         <ul id="taskList"></ul>
         <h3>Add New Task</h3>
         <form id="taskForm" autocomplete="off">
-            <label for="task_name">Task Name</label>
-            <input type="text" id="task_name" required>
-            <div class="checkbox-row">
-                <input type="checkbox" id="all_day" name="all_day">
-                <label for="all_day">All Day Task</label>
-            </div>
-            <div id="time_fields">
-                <label for="task_time">Task Time</label>
-                <input type="time" id="task_time" required>
-            </div>
+
             <label for="task_description">Task Description</label>
             <textarea id="task_description" placeholder="Task Description" style="resize: vertical;"></textarea>
-            <div class="color-row">
-                <label for="color">Task Color</label>
-                <input type="color" id="color" value="#000000">
-            </div>
-            <label for="due_date">Due Date</label>
-            <input type="date" id="due_date" required>
-            <label for="status">Priority</label>
-            <select name="status" id="status">
-                <option value="1">1. URGENT</option>
-                <option value="2">2. HIGH</option>
-                <option value="3">3. MEDIUM</option>
-                <option value="4">4. LOW</option>
-            </select>
+            
             <button type="submit">Add Task</button>
         </form>
     </div>
     <script>
-        document.getElementById('all_day').addEventListener('change', function() {
-            const timeFields = document.getElementById('time_fields');
-            const taskTimeInput = document.getElementById('task_time');
-            if (this.checked) {
-                timeFields.style.display = 'none';
-                taskTimeInput.required = false;
-            } else {
-                timeFields.style.display = 'block';
-                taskTimeInput.required = true;
-            }
-        });
+
 
         function setBackground(imageUrl) {
             const body = document.body;
@@ -301,20 +270,40 @@
             const tasks = await response.json();
             const taskList = document.getElementById('taskList');
             taskList.innerHTML = '';
+
             tasks.forEach(task => {
+                
+                const [
+                    id,           
+                    __,     
+                    task_name,    
+                    task_time,    
+                    task_description, 
+                    due_date,     
+                    priority,     
+                    color         
+                ] = task;
+
+                // Handle due_date if it's like "2025-06-27T00:00:00" 
+                let dueDateDisplay = due_date
+                    ? due_date.replace(/ 00:00:00.*$/, '')
+                    : "";
+
+
+
+                // Render
                 const li = document.createElement('li');
                 li.innerHTML = `
                     <details>
                         <summary>
-                            <strong style="color: ${task.color};">${task.task_name}</strong> (Due: ${formatDateForDisplay(task.due_date)}) - ${task.status}
+                            <strong style="color: ${color};">${task_name}</strong> (Due: ${dueDateDisplay} ${task_time ? task_time : ""}) 
                         </summary>
                         <div style="margin-left: 10px;">
                             <div style="margin: 8px 0; color: #222;">
-                                <div><b>Time:</b> ${task.task_time ? task.task_time : "N/A"}</div>
-                                <div><b>Description:</b> ${task.task_description ? task.task_description : "No description provided"}</div>
-                                <div><b>Color:</b> <span style="background-color: ${task.color}; padding: 0 10px; border-radius: 6px;">${task.color}</span></div>
+                                <div><b>Description:</b> ${task_description}</div>
+                                <div><b>Color:</b> <span style="background-color: ${color}; padding: 0 10px; border-radius: 6px;">${color}</span></div>
                             </div>
-                            <button onclick="deleteTask(${task.id})" style="background: #ff4f4f; color: #fff; border-radius: 8px; border: none; padding: 6px 16px; margin-top: 8px; cursor: pointer;">Delete</button>
+                            <button onclick="deleteTask(${id})" style="background: #ff4f4f; color: #fff; border-radius: 8px; border: none; padding: 6px 16px; margin-top: 8px; cursor: pointer;">Delete</button>
                         </div>
                     </details>
                 `;
@@ -322,12 +311,7 @@
             });
         }
 
-        function formatDateForDisplay(storedDate) {
-            const [month, day, year] = storedDate.split('/');
-            const date = new Date(`20${year}`, month - 1, day);
-            const options = { day: '2-digit', month: 'short' };
-            return date.toLocaleDateString('en-US', options);
-        }
+
 
         async function deleteTask(taskId) {
             const response = await fetch('/tasks/' + taskId, {
@@ -342,20 +326,18 @@
 
         document.getElementById('taskForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            let taskTime = "";
-            const isAllDay = document.getElementById('all_day').checked;
-            if (isAllDay) {
-                taskTime = "all day";
-            } else {
-                taskTime = document.getElementById('task_time').value;
+
+            const description = document.getElementById('task_description').value;
+
+            if (description.length > 200) {
+                alert('Description too long (max 200 characters)')
+                return;
             }
+
             const taskData = {
-                task_name: document.getElementById('task_name').value,
-                task_time: taskTime,
-                task_description: document.getElementById('task_description').value,
-                color: document.getElementById('color').value,
-                due_date: document.getElementById('due_date').value,
-                status: document.getElementById('status').value
+
+                task_description: description,
+
             };
             const response = await fetch('/tasks', {
                 method: 'POST',
@@ -366,7 +348,7 @@
             });
             if (response.ok) {
                 document.getElementById('taskForm').reset();
-                document.getElementById('time_fields').style.display = 'block';
+            
                 loadTasks();
             } else {
                 alert('Failed to add task');
