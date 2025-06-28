@@ -12,3 +12,7 @@ anirudh_tasks.json
 cloudflareLaunch.bat
 anirudh_tasks.json
 users.json
+*.pyc
+logic/__pycache__/tasks.cpython-311.pyc
+*.pyc
+logic/__pycache__/tasks.cpython-311.pyc
