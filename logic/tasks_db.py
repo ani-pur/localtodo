@@ -1,4 +1,4 @@
-import psycopg2
+import psycopg2 
 import json
 
 # THIS MODULE HANDLES CRUD OPERATIONS
@@ -47,21 +47,26 @@ def add_task(username: str, jsonInput: str):
 
 
 # fetch tasks from db
-def get_all_tasks(username):
+def get_all_tasks(username, sort_order):
     with dbConnect() as conn:
         with conn.cursor() as cur:
             try: 
-                cur.execute(
-                    "SELECT * FROM tasks WHERE username = %s",(username,)
-                )
-                rows = cur.fetchall()
-                return rows
-
+                if sort_order=='default':
+                    cur.execute(
+                        "SELECT * FROM tasks WHERE username = %s",(username,)
+                    )
+                    rows = cur.fetchall()
+                    return rows
+                
+                elif sort_order=='reverse':
+                    cur.execute(
+                            "SELECT * FROM tasks WHERE username = %s ORDER BY due_date DESC;",(username,)
+                        )
             except psycopg2.Error as e:
                 print("DB error: ",e)
 
     
-# ADD: delete_task(username, task_id)
+# delete_task(username, task_id)
 def delete_task(username, task_id):
     with dbConnect() as conn:
         with conn.cursor() as cur:
@@ -73,3 +78,7 @@ def delete_task(username, task_id):
                 return True
             except psycopg2.Error as e:
                 print("DB error: ",e)
+
+
+
+# ADD: edit_task(username, task_id)
