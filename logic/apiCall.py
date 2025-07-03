@@ -4,10 +4,12 @@ from datetime import date,datetime
 from openai import OpenAI
 import time
 from textwrap import dedent
+import os
 
 
 #hardcoded key for testing
-client = OpenAI(api_key="")
+api_key=os.environ.get('API_KEY')
+client = OpenAI(api_key)
 # !! REMEMBER TO REMOVE !!
 
 sysPrompt="""You are an information extraction engine.

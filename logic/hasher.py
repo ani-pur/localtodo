@@ -2,18 +2,18 @@
 
 
 import werkzeug.security as wz
-#import os
+import os
 #import json
 import psycopg2
 
 # connect to db
 def dbConnect():
     return psycopg2.connect(
-        dbname = 'tasker',
-        user = 'anirudh',
-        password = "",      #fill
-        host = 'localhost',
-        port = ''       #fill
+        dbname = os.environ.get('POSTRGES_DB'),
+        user = os.environ.get('POSTGRES_USER'),
+        password = os.environ.get('POSTGRES_PASSWORD'),
+        host = os.environ.get('POSTGRES_HOST'),
+        port = os.environ.get('POSTGRES_PORT')
     )
 
 
