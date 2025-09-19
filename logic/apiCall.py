@@ -8,20 +8,21 @@ import os
 
 
 #hardcoded key for testing
-client = OpenAI()
-# !! REMEMBER TO REMOVE !!
+client = OpenAI(api_key=)
+# !! REPLACE WITH ENV VARS !!
 
 sysPrompt="""You are an information extraction engine.
 
 Instructions:
 - Extract ONLY these fields from the user input as a JSON object:
 
-    1. task_name [required]: Task title. Paraphrase if longer than 8 words. 
-    2. task_time [optional]: 12-hour format (e.g., "4:32 PM"). If input uses relative phrases (e.g., "in 2 hours"), calculate the specific time using the provided user metadata. Else, null.
-    3. task_description [optional]: preserve ALL detail.
+    1. task_name [required]: Task title. Keep details, paraphrase if longer than 12 words
+    2. task_time [optional]: 12-hour format (e.g., "4:32 PM"). If input uses relative phrases (e.g., "in 2 hours"), calculate the specific time using the provided user metadata. "Midnight" means 11:59pm same day. Else, null.
+    3. task_description [optional]: preserve ALL detail from user input.
     4. due_date [required]: Always resolve to an absolute date. If input uses relative date/time ("in 5 hours", "tomorrow"), use the appended metadata (see below) to calculate. Format: 'DD Mon YYYY' (e.g., "01 Jul 2025").
     5. priority [optional]: Integer 1-4. Default to 4 if not mentioned. Exams/university assignments = high priority (1).
-    6. color [optional]: Return hex value. Default #FDB927 if not given.
+    6. color [optional]: Return hex value. Default #FFFFFF if not given. Blue: #0000ff, Red: #f05656, Green: #93C47D, Pink: #ffc0cb, Orange: #ff7f00
+
 
 - The user's current date/time is appended after "[USER TIMEZONE METADATA]" at the end of the input. Example:
     [USER TIMEZONE METADATA]
@@ -55,7 +56,7 @@ def warmupCall():
     warmup_startTime=time.time()
     emptyResponse = client.responses.create(
         model="gpt-4.1-nano-2025-04-14",
-        instructions="warmup call for cold-start latency, respond with 'warmed up' ",
+        instructions="warmup request to handle cold-start latency, respond with 'warmed up' ",
         input="  "
     )
     print('api WARMUP RESPONSE: ',emptyResponse.output_text)
