@@ -60,7 +60,7 @@ def handle_tasks():
         return jsonify({'error': 'Not authenticated'}), 401
     username = session['username']
     if request.method == 'GET':
-        sort_order='default'
+        sort_order='custom'
         taskList = tasks.get_all_tasks(username, sort_order)
         return jsonify(taskList)
     elif request.method == 'POST':
