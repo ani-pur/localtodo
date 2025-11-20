@@ -2,11 +2,12 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from logic import hasher                # 'from logic import' if not running locally
 from logic import tasks_db as tasks     # ^
 from logic import apiCall as api        # ^
-import secrets      
+import secrets    
+import os
 
 
 app = Flask(__name__)
-app.secret_key = secrets.token_hex()  # Replace 
+app.secret_key = os.environ["FLASK_SECRET_KEY"] 
 
 # LOGIN ROUTE
 @app.route('/login', methods=['GET', 'POST'])
