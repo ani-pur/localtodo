@@ -44,6 +44,7 @@ def logout():
 # root route
 @app.route('/')
 def index():
+    print(f"Handling request in PID={os.getpid()}
     if 'username' not in session:
         return redirect(url_for('login'))
     
