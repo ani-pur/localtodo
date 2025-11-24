@@ -1,16 +1,17 @@
 # this program constructs user metadata that gets appended to user request to API
 
 from datetime import date,datetime
-from openai import AsyncOpenAI
+from openai import OpenAI
 import time
 from textwrap import dedent
 import os
+import threading
 
 
 # hardcoded key for testing
 #api_key=""
 api_key=os.environ.get('API_KEY')
-client = AsyncOpenAI(api_key=api_key)
+client = OpenAI(api_key=api_key)
 # !! REPLACE WITH ENV VARS !!
 
 sysPrompt="""You are an information extraction engine.
@@ -54,9 +55,9 @@ def initializeUserTzData():
 
 
 
-async def warmupCall():
+def warmupCall():
     warmup_startTime=time.time()
-    emptyResponse = await client.responses.create(
+    emptyResponse = client.responses.create(
         model="gpt-5-nano-2025-08-07",
         instructions="warmup request to handle cold-start latency, respond with 'warmed up' ",
         input="  ",
@@ -69,7 +70,9 @@ async def warmupCall():
     warmupClock = warmup_endTime - warmup_startTime
     print('api WARMUP time: ',warmupClock)
 
-
+def warmupCall_async():
+    t = threading.Thread(target=warmupCall, daemon=True)
+    t.start()
 
 # pass to api
 def postRequest(userInput: dict) -> str:  

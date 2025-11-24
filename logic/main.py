@@ -4,7 +4,6 @@ from logic import tasks_db as tasks     # ^
 from logic import apiCall as api        # ^
 import secrets    
 import os
-import asyncio
 
 
 app = Flask(__name__)
@@ -12,7 +11,7 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY')
 
 # LOGIN ROUTE
 @app.route('/login', methods=['GET', 'POST'])
-async def login():
+def login():
     error = None
     if request.method == 'POST':
         input_pass = request.form.get('password', '').strip()
@@ -21,7 +20,7 @@ async def login():
             session['username'] = user
             # add logging here
             print("!! USER FOUND: ",user)
-            asyncio.create_task(api.warmupCall())                # [WARMUP]
+            api.warmupCall_async()              # [WARMUP]
             return redirect(url_for('index'))
         
         else:
