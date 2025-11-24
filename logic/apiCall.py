@@ -1,7 +1,7 @@
 # this program constructs user metadata that gets appended to user request to API
 
 from datetime import date,datetime
-from openai import OpenAI
+from openai import AsyncOpenAI
 import time
 from textwrap import dedent
 import os
@@ -54,9 +54,9 @@ def initializeUserTzData():
 
 
 
-def warmupCall():
+async def warmupCall():
     warmup_startTime=time.time()
-    emptyResponse = client.responses.create(
+    emptyResponse = await client.responses.create(
         model="gpt-5-nano-2025-08-07",
         instructions="warmup request to handle cold-start latency, respond with 'warmed up' ",
         input="  ",
