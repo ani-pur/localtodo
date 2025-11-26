@@ -1,9 +1,8 @@
 import psycopg2 
 import json
 import os
-# THIS MODULE HANDLES CRUD OPERATIONS
-# create 'tasks' table in tasker db with fields corresponding to json + ID (Serial)
-# connect to db
+
+
 def dbConnect():
     return psycopg2.connect(
         dbname = os.environ.get('POSTGRES_DB'),
@@ -28,7 +27,7 @@ def add_task(username: str, jsonInput: str, task_data: dict):		# added task_data
         due_date = sendToDb.get('due_date')
         priority = sendToDb.get('priority')
         color = sendToDb.get('color')
-        userInput = task_data.get('task_description')		#initial freeform user input, grabbed from desktop.html ingest - sorry for horrible naming lol
+        userInput = task_data.get('task_description')		#initial freeform user input, grabbed from desktop.html ingest - horrible naming lol
         with dbConnect() as conn:
             with conn.cursor() as cur:
                 try: 
