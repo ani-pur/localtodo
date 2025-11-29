@@ -23,7 +23,7 @@ def login():
             session['username'] = user
             # add logging here
             print("!! USER FOUND: ",user)
-            api.warmupCall_async()              # [WARMUP]
+           # api.warmupCall_async()              # [WARMUP]
             return redirect(url_for('index'))
         
         else:
